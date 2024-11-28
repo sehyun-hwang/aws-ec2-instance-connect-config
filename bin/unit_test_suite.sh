@@ -31,8 +31,8 @@ trap 'rm -rf "${tmpdir}"' EXIT
 # Combine unittest & intermediate into the trust chain for the actual AuthorizedKeysCommand
 cat "${tmpdir}/unittest.pem" "${tmpdir}/intermediate.pem" "${tmpdir}/ca.pem" > "${tmpdir}/chain.pem"
 
-intermediate_fingerprint="$(openssl x509 -noout -fingerprint -sha1 -inform pem -in "${tmpdir}/intermediate.pem" | sed -n 's/SHA1 Fingerprint=\(.*\)/\1/p' | tr -d ':')"
-unittest_fingerprint="$(openssl x509 -noout -fingerprint -sha1 -inform pem -in "${tmpdir}"/unittest.pem | sed -n 's/SHA1 Fingerprint=\(.*\)/\1/p' | tr -d ':')"
+intermediate_fingerprint="$(openssl x509 -noout -fingerprint -sha1 -inform pem -in "${tmpdir}/intermediate.pem" | sed -n 's/SHA1 Fingerprint=\(.*\)/\1/pI' | tr -d ':')"
+unittest_fingerprint="$(openssl x509 -noout -fingerprint -sha1 -inform pem -in "${tmpdir}"/unittest.pem | sed -n 's/SHA1 Fingerprint=\(.*\)/\1/pI' | tr -d ':')"
 
 # Generate OCSP for those certificates
 "${TOPDIR}/bin/unit-test/generate_ocsp.sh" "${OPENSSL}" "${tmpdir}/intermediate.crt" "${tmpdir}/ca" "${tmpdir}/${intermediate_fingerprint}"

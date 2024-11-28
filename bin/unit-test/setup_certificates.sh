@@ -78,7 +78,9 @@ extendedKeyUsage = OCSPSigning
 [v3_ca]
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
-basicConstraints = CA:TRUE
+basicConstraints = critical,CA:TRUE
+keyUsage = critical, cRLSign, keyCertSign, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = OCSPSigning
 
 [req]
 distinguished_name = req_distinguished_name
@@ -91,7 +93,8 @@ sed -i "s|REPLACE_WITH_CERTPATH|${certpath}|" "${certpath}/ca.conf"
 
 # Generate the CA
 "${OPENSSL}" genrsa -out "${certpath}/ca.key" 2048 > /dev/null 2>&1
-"${OPENSSL}" req -x509 -new -nodes -key "${certpath}/ca.key" -sha256 -days 1 -out "${certpath}/ca.crt" -subj "/CN=managedssh.amazonaws.com" > /dev/null 2>&1
+"${OPENSSL}" req -x509 -new -nodes -key "${certpath}/ca.key" -sha256 -days 1 -out "${certpath}/ca.crt" -subj "/CN=managedssh.amazonaws.com" \
+    -addext "keyUsage = critical, cRLSign, keyCertSign, nonRepudiation, digitalSignature, keyEncipherment" > /dev/null 2>&1
 "${OPENSSL}" x509 -in "${certpath}/ca.crt" -outform PEM -out "${certpath}/ca.pem"
 subject=$("${OPENSSL}" x509 -noout -subject -in "${certpath}/ca.pem" | sed -n -e 's/^.*CN=//p')
 # Add "# subject" to start
